@@ -1,0 +1,19 @@
+name: Deploy via AWX
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  trigger-awx:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger AWX Job Template
+        env:
+          AWX_URL: ${{ secrets.AWX_URL }}
+          AWX_API_TOKEN: ${{ secrets.AWX_API_TOKEN }}
+        run: |
+          curl -X POST "$AWX_URL/api/v2/job_templates/1/launch/" \
+            -H "Authorization: Bearer $AWX_API_TOKEN" \
+            -H "Content-Type: application/json"
