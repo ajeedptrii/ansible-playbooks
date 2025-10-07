@@ -1,4 +1,3 @@
----
 - name: Deploy Flappy Bird Web Game
   hosts: srv-target
   become: yes
@@ -23,13 +22,9 @@
         group: www-data
         mode: '0755'
 
-    - name: Buat index redirect otomatis ke Flappy Bird
-      copy:
-        dest: /var/www/html/index.html
-        content: |
-          <meta http-equiv="refresh" content="0; url=/flappybird/">
-
-    - name: Restart service Nginx
+    - name: Pastikan Nginx berjalan
       service:
         name: nginx
-        state: restarted
+        state: started
+        enabled: yes
+
