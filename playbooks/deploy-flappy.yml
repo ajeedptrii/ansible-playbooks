@@ -1,0 +1,35 @@
+---
+- name: Deploy Flappy Bird Web Game
+  hosts: srv-target
+  become: yes
+
+  tasks:
+    - name: Pastikan Nginx terinstall
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Hapus folder Flappy Bird lama
+      file:
+        path: /var/www/html/flappybird
+        state: absent
+
+    - name: Deploy file game Flappy Bird ke server
+      copy:
+        src: files/flappybird/
+        dest: /var/www/html/flappybird/
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Buat index redirect otomatis ke Flappy Bird
+      copy:
+        dest: /var/www/html/index.html
+        content: |
+          <meta http-equiv="refresh" content="0; url=/flappybird/">
+
+    - name: Restart service Nginx
+      service:
+        name: nginx
+        state: restarted
