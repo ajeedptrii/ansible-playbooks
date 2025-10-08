@@ -1,5 +1,5 @@
 - name: Deploy Flappy Bird Web Game
-  hosts: srv-target
+  hosts: webserver
   become: yes
 
   tasks:
