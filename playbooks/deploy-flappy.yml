@@ -1,7 +1,6 @@
 - name: Deploy Flappy Bird Web Game
   hosts: webserver
   become: yes
-
   tasks:
     - name: Pastikan Nginx terinstall
       apt:
@@ -15,16 +14,16 @@
         state: absent
 
     - name: Deploy file game Flappy Bird ke server
-  copy:
-    src: ../playbooks/files/flappybird/
-    dest: /var/www/html/flappybird/
-    owner: www-data
-    group: www-data
-    mode: '0755'
-
+      copy:
+        src: ../playbooks/files/flappybird/
+        dest: /var/www/html/flappybird/
+        owner: www-data
+        group: www-data
+        mode: '0755'
 
     - name: Pastikan Nginx berjalan
       service:
         name: nginx
         state: started
         enabled: yes
+
