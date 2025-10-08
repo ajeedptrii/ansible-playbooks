@@ -1,0 +1,11 @@
+- name: Tes Copy Flappybird ke Webserver
+  hosts: webserver
+  become: yes
+  tasks:
+    - name: Salin file Flappybird ke folder testflappy
+      copy:
+        src: files/flappybird/
+        dest: /var/www/html/testflappy/
+        owner: www-data
+        group: www-data
+        mode: '0755'
