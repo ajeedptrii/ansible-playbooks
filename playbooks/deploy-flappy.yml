@@ -1,3 +1,4 @@
+---
 - name: Deploy Flappy Bird Web Game
   hosts: webserver
   become: yes
@@ -8,7 +9,13 @@
         state: present
         update_cache: yes
 
-    - name: Hapus folder Flappy Bird lama
+    - name: Pastikan Nginx berjalan
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Hapus folder Flappy Bird lama (jika ada)
       file:
         path: /var/www/html/flappybird
         state: absent
@@ -21,9 +28,17 @@
         group: www-data
         mode: '0755'
 
-    - name: Pastikan Nginx berjalan
+    - name: Pastikan index Nginx default diganti dengan redirect ke Flappy Bird
+      copy:
+        dest: /var/www/html/index.html
+        content: |
+          <meta http-equiv="refresh" content="0; url=/flappybird/">
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Restart Nginx
       service:
         name: nginx
-        state: started
-        enabled: yes
+        state: restarted
 
