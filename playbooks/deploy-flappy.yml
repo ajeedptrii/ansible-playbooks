@@ -2,6 +2,11 @@
 - name: Deploy Flappy Bird Web Game
   hosts: webserver
   become: yes
+
+  vars:
+    deploy_path: /var/www/html/flappybird
+    repo_url: "https://github.com/ajeedptrii/flappybird-deploy.git"
+
   tasks:
     - name: Pastikan Nginx terinstall
       apt:
@@ -9,36 +14,27 @@
         state: present
         update_cache: yes
 
-    - name: Pastikan Nginx berjalan
+    - name: Hapus folder lama Flappy Bird jika ada
+      file:
+        path: "{{ deploy_path }}"
+        state: absent
+
+    - name: Clone repository Flappy Bird dari GitHub
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ deploy_path }}"
+        version: main
+
+    - name: Ubah kepemilikan folder
+      file:
+        path: "{{ deploy_path }}"
+        owner: www-data
+        group: www-data
+        recurse: yes
+
+    - name: Pastikan Nginx aktif dan berjalan
       service:
         name: nginx
         state: started
         enabled: yes
-
-    - name: Hapus folder Flappy Bird lama (jika ada)
-      file:
-        path: /var/www/html/flappybird
-        state: absent
-
-    - name: Deploy file game Flappy Bird ke server
-      copy:
-        src: ../playbooks/files/flappybird/
-        dest: /var/www/html/flappybird/
-        owner: www-data
-        group: www-data
-        mode: '0755'
-
-    - name: Pastikan index Nginx default diganti dengan redirect ke Flappy Bird
-      copy:
-        dest: /var/www/html/index.html
-        content: |
-          <meta http-equiv="refresh" content="0; url=/flappybird/">
-        owner: www-data
-        group: www-data
-        mode: '0644'
-
-    - name: Restart Nginx
-      service:
-        name: nginx
-        state: restarted
 
