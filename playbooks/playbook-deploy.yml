@@ -7,8 +7,37 @@
         killall apt apt-get 2>/dev/null || true
 
 
+    - name: Remove apt locks and fix dpkg
+      shell: |
+        rm -f /var/lib/dpkg/lock-frontend
+        rm -f /var/lib/apt/lists/lock
+        rm -f /var/cache/apt/archives/lock
+        dpkg --configure -a
+      ignore_errors: yes
+
+
+    - name: Change Ubuntu repo to main archive
+      replace:
+        path: /etc/apt/sources.list
+        regexp: 'http://id.archive.ubuntu.com/ubuntu'
+        replace: 'http://archive.ubuntu.com/ubuntu'
+      register: repo_changed
+      ignore_errors: yes
+
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      when: repo_changed is succeeded or repo_changed is skipped
+
     - name: Install nginx
       apt:
         name: nginx
         state: present
         update_cache: yes
+
+    - name: Ensure nginx is running
+      service:
+        name: nginx
+        state: started
+        enabled: yes
