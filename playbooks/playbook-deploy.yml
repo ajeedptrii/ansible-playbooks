@@ -2,13 +2,18 @@
   hosts: all
   become: yes
   tasks:
+    - name: Kill any leftover apt processes
+      shell: |
+        killall apt apt-get 2>/dev/null || true
+
+
     - name: Install nginx
       apt:
         name: nginx
         state: present
         update_cache: yes
-  retries: 3
-  delay: 5
-- name: Kill any leftover apt processes
-  become: yes
-  shell: killall apt apt-get || true
+      register: result
+      until: result is succeeded
+      retries: 3
+      delay: 5
+
