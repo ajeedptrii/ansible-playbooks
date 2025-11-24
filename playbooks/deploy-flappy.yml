@@ -1,6 +1,6 @@
 ---
 - name: Deploy Flappy Bird Web Game
-  hosts: webserver
+  hosts: all
   become: yes
 
   vars:
